@@ -1,0 +1,15 @@
+Fase 5: Consultas avanzadas (Business Intelligence)
+El Gerente de operaciones necesita visualizar la siguiente información a través de Postman:
+•
+Análisis de proveedores:
+o
+"Necesito saber qué proveedores nos han vendido más productos (en cantidad de items) y cuál es el valor total del inventario que tenemos asociado a cada uno."
+•
+Comportamiento del cliente:
+o
+"Quiero ver el historial de compras de un cliente específico, detallando productos, fechas y el total gastado en cada transacción."
+•
+Productos estrella:
+o
+"Genera un listado de los productos más vendidos dentro de una categoría específica, ordenados por ingresos generados."
+(Nota: Para SQL, esto requiere JOINs/Group By. Para NoSQL, esto requiere Aggregation Framework).
