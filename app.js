@@ -26,6 +26,7 @@ pool.connect((error) => {
 // App running
 
 const app = express();
+app.use(express.json());
 const upload = multer({ dest: "uploads/" });
 
 const apiGet = function (endpoint) {
@@ -76,9 +77,18 @@ app.delete(`/api/delete/:endpoint/:id`, (req, res) => {
   res.json({ status: "deleted", entity: endpoint, id: id });
 });
 
-app.put(`/api/put/:endpoint/:id`, (req, res) => {
+app.patch(`/api/patch/:endpoint/:id`, (req, res) => {
   const { endpoint, id } = req.params;
-  res.json({ status: "updated", entity: endpoint, id: `with id: ${id}` });
+  const { column, value } = req.body;
+
+  pool.query(
+    `UPDATE ${endpoint} SET ${column} = '${value}' WHERE id_category = ${id}`,
+    (error) => {
+      error
+        ? res.status(500).json({ error: error.message })
+        : res.json({ status: "updated", id });
+    },
+  );
 });
 
 apiPost("categories", ["id_category", "product_category"]);
