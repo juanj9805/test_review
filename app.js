@@ -24,11 +24,11 @@ pool.connect((error) => {
 });
 
 // App running
-
 const app = express();
 app.use(express.json());
 const upload = multer({ dest: "uploads/" });
 
+// APIS
 const apiGet = function (endpoint) {
   app.get(`/api/${endpoint}`, (req, res) => {
     pool.query(`SELECT * FROM ${endpoint}`, (error, result) => {
@@ -100,3 +100,4 @@ apiGet("suppliers");
 app.listen(process.env.PORT, () => {
   console.log(`http://localhost:${process.env.PORT}`);
 });
+  
