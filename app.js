@@ -1,3 +1,4 @@
+// Imports
 require("dotenv").config();
 // api
 const express = require("express");
@@ -9,6 +10,7 @@ const fs = require("fs");
 const multer = require("multer");
 const { parse } = require("csv-parse");
 
+// Data base connections
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("Connected! mongo"))
@@ -21,8 +23,18 @@ pool.connect((error) => {
   error ? console.log("error mysql") : console.log("ok mysql");
 });
 
+// App running
+
 const app = express();
 const upload = multer({ dest: "uploads/" });
+
+const apiGet = function (endpoint) {
+  app.get(`/api/${endpoint}`, (req, res) => {
+    pool.query(`SELECT * FROM ${endpoint}`, (error, result) => {
+      error ? res.status(500).json({ error: error.message }) : res.json(result);
+    });
+  });
+};
 
 const apiPost = function (endpoint, columns) {
   app.post(
@@ -58,16 +70,19 @@ const apiPost = function (endpoint, columns) {
   );
 };
 
+app.delete(`/api/delete/:endpoint/:id`, (req, res) => {
+  const { endpoint, id } = req.params;
+  pool.query(`DELETE FROM ${endpoint} WHERE id = ${id}`);
+  res.json({ status: "deleted", entity: endpoint, id: id });
+});
+
+app.put(`/api/put/:endpoint/:id`, (req, res) => {
+  const { endpoint, id } = req.params;
+  res.json({ status: "updated", entity: endpoint, id: `with id: ${id}` });
+});
+
 apiPost("categories", ["id_category", "product_category"]);
 apiPost("suppliers", ["supplier_id", "supplier_name", "supplier_email"]);
-
-const apiGet = function (endpoint) {
-  app.get(`/api/${endpoint}`, (req, res) => {
-    pool.query(`SELECT * FROM ${endpoint}`, (error, result) => {
-      error ? res.status(500).json({ error: error.message }) : res.json(result);
-    });
-  });
-};
 
 apiGet("categories");
 apiGet("suppliers");
