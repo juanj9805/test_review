@@ -9,26 +9,63 @@ const fs = require("fs");
 const multer = require("multer");
 const { parse } = require("csv-parse");
 
-const app = express();
-
-const pool = mysql.createConnection(process.env.MYSQL_URL);
-
-pool.connect((error) => {
-  error ? console.log("error mysql") : console.log("ok mysql");
-});
-
-app.get("/api/categories", (req, res) => {
-  pool.query("SELECT * FROM categories", (error, result) => {
-    error ? res.status(500).json({ error: error.message }) : res.json(result);
-  });
-});
-
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("Connected! mongo"))
   .catch(() => {
     console.log("error with mongo");
   });
+
+const pool = mysql.createConnection(process.env.MYSQL_URL);
+pool.connect((error) => {
+  error ? console.log("error mysql") : console.log("ok mysql");
+});
+
+const app = express();
+const upload = multer({ dest: "uploads/" });
+
+const apiPost = function (endpoint, columns) {
+  app.post(
+    `/api/upload/${endpoint}`,
+    upload.single("file"),
+    function (req, res) {
+      const rows = [];
+      fs.createReadStream(req.file.path)
+        .pipe(parse({ columns: true, trim: true }))
+        .on("data", (row) => rows.push(row))
+        .on("end", async () => {
+          try {
+            if (rows.length) {
+              console.log(rows);
+              const values = rows
+                .map(
+                  (row) => `(${columns.map((c) => `'${row[c]}'`).join(",")})`,
+                )
+                .join(",");
+
+              pool.query(
+                `INSERT INTO ${endpoint} (${columns.join(",")}) VALUES ${values}`,
+              );
+            }
+            res.json({ ok: true, total: rows.length });
+          } catch (error) {
+            res
+              .status(500)
+              .json({ error: "internal server error with post method" });
+          }
+        });
+    },
+  );
+};
+
+apiPost("categories", ["id_category", "product_category"]);
+apiPost("suppliers", ["supplier_id", "supplier_name", "supplier_email"]);
+
+app.get("/api/categories", (req, res) => {
+  pool.query("SELECT * FROM categories", (error, result) => {
+    error ? res.status(500).json({ error: error.message }) : res.json(result);
+  });
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`http://localhost:${process.env.PORT}`);
