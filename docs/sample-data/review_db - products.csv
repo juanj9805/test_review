@@ -1,0 +1,11 @@
+id,sku,name,price,quantity,categories_id,suppliers_id
+1,LPT-HP-001,Laptop HP Pavilion 15,3500000,1,1,1
+2,MSE-LOG-001,Mouse Logitech G203,120000,2,2,2
+3,USB-KIN-64,USB Kingston 64GB,45000,1,1,3
+4,CHR-ERG-005,Silla Ergonomica Office,450000,1,3,4
+5,MON-SAM-24,Monitor Samsung 24,600000,2,1,5
+6,KBD-MEC-002,Teclado Mecanico Redragon,250000,1,2,6
+7,DSK-STD-100,Escritorio Estandar Blanco,320000,1,3,7
+8,LMP-LED-001,Lampara LED Escritorio,80000,3,4,8
+9,HDP-SNY-005,Audifonos Sony WH-1000,1200000,1,2,9
+10,MSE-LOG-001,Mouse Logitech G203,120000,1,2,10
