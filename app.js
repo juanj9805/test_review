@@ -1,17 +1,20 @@
+require("dotenv").config();
+// api
 const express = require("express");
+// databases
 const mongoose = require("mongoose");
-const app = express();
 const mysql = require("mysql2");
+// services
+const fs = require("fs");
+const multer = require("multer");
+const { parse } = require("csv-parse");
 
-const pool = mysql.createConnection({
-  host: "157.180.40.190",
-  user: "root",
-  password: "scORHWprCvp26Gz1zwPQgSsokHyPC2",
-  database: "test",
-});
+const app = express();
+
+const pool = mysql.createConnection(process.env.MYSQL_URL);
 
 pool.connect((error) => {
-  error ? console.log("error") : console.log("ok");
+  error ? console.log("error mysql") : console.log("ok mysql");
 });
 
 app.get("/api/categories", (req, res) => {
@@ -21,14 +24,12 @@ app.get("/api/categories", (req, res) => {
 });
 
 mongoose
-  .connect(
-    "mongodb+srv://root:scORHWprCvp26Gz1zwPQgSsokHyPC2@mega-db.z1yp5vi.mongodb.net/?appName=mega-db",
-  )
-  .then(() => console.log("Connected!"))
+  .connect(process.env.MONGO_URL)
+  .then(() => console.log("Connected! mongo"))
   .catch(() => {
-    console.log("error ");
+    console.log("error with mongo");
   });
 
-app.listen(3001, () => {
-  console.log("http://localhost:3001");
+app.listen(process.env.PORT, () => {
+  console.log(`http://localhost:${process.env.PORT}`);
 });
