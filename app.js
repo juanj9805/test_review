@@ -61,11 +61,16 @@ const apiPost = function (endpoint, columns) {
 apiPost("categories", ["id_category", "product_category"]);
 apiPost("suppliers", ["supplier_id", "supplier_name", "supplier_email"]);
 
-app.get("/api/categories", (req, res) => {
-  pool.query("SELECT * FROM categories", (error, result) => {
-    error ? res.status(500).json({ error: error.message }) : res.json(result);
+const apiGet = function (endpoint) {
+  app.get(`/api/${endpoint}`, (req, res) => {
+    pool.query(`SELECT * FROM ${endpoint}`, (error, result) => {
+      error ? res.status(500).json({ error: error.message }) : res.json(result);
+    });
   });
-});
+};
+
+apiGet("categories");
+apiGet("suppliers");
 
 app.listen(process.env.PORT, () => {
   console.log(`http://localhost:${process.env.PORT}`);
